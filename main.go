@@ -47,9 +47,14 @@ func main() {
 		panic(err)
 	}
 	for _, event := range result.Embedded.Events {
-		fmt.Printf("event.Name: %v\n", event.Name)
-		fmt.Printf("event.Start: %v\n", event.Start)
-		fmt.Printf("event.End: %v\n", event.End)
+		fmt.Printf("event name: %v\n", result.GetEventName(&event))
+		// format hh:mm
+		fmt.Printf("Event starts at: %s\n", event.Start.Format("15:04"))
+		fmt.Printf("and ends at %s\n", event.End.Format("15:04"))
+		// print the teacher using GetTeacher, address and room
+		fmt.Printf("Teacher: %s\n", result.GetTeacherName(&event))
+		address, room := result.GetAddress(&event)
+		fmt.Printf("Address: %s %s\n", address, room)
 	}
 
 }
