@@ -7,13 +7,26 @@ import (
 
 // mess is because the API response is a huge mess of nested structs
 
+// gets the format and type of an event
+func (data *Event) GetFormatAndType() (string, string) {
+	// difficulty level 0
+	format, _ := data.FormatID.(string)
+	typ := data.TypeID
+	// ignore, they are already empty
+	return format, typ
+}
+
 // Gets the name of an event
 func (data *ScheduleResponse) GetEventName(e *Event) string {
 	// return e.Name  // if it'd be that easy)))
 	//but it's still in difficulty level 1
 	for _, cur := range data.Embedded.CourseUnitRealizations {
-		if cur.ID == e.ID {
-			return cur.Name
+		if cur.ID == e.Links.CourseUnitRealization.Href[1:] {
+			name := cur.Name
+			if name == "" {
+				return cur.NameShort
+			}
+			return name
 		}
 	}
 	return "Без названия"

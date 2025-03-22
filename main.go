@@ -48,6 +48,8 @@ func main() {
 	}
 	for _, event := range result.Embedded.Events {
 		fmt.Printf("event name: %v\n", result.GetEventName(&event))
+		format, typ := event.GetFormatAndType()
+		fmt.Printf("Format: %s, Type: %s\n", format, typ)
 		// format hh:mm
 		fmt.Printf("Event starts at: %s\n", event.Start.Format("15:04"))
 		fmt.Printf("and ends at %s\n", event.End.Format("15:04"))
