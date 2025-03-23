@@ -44,7 +44,7 @@ func main() {
 	me := personList[0]
 	// tomorrow 00:00 - 23:59
 	tomorrow := time.Now().AddDate(0, 0, 1).Truncate(24 * time.Hour)
-	tomorrowEnd := time.Now().AddDate(0, 0, 1).Add(24 * time.Hour)
+	tomorrowEnd := tomorrow.Add(24 * time.Hour).Add(-1 * time.Second)
 	schedule, err := m.GetSchedule(me.ID, tomorrow, tomorrowEnd)
 	if err != nil {
 		panic(err)

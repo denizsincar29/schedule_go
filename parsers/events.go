@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"schedule/modeus"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -61,12 +62,20 @@ func (e *Event) String() string {
 
 // russian string representation of the event, human readable
 func (e *Event) HumanString() string {
+	address := "Место проведения: " + e.Address
+	if e.Room != "" {
+		address += ", ауд. " + e.Room
+	}
+	if strings.HasPrefix(e.Address, "https") {
+		address = "Ссылка: " + e.Address
+	}
 	if eventNumber := e.GetEventNumber(); eventNumber != -1 {
 		// Пара 1, лекция, программирование.\nВедёт Иванов Иван Иванович.\nМесто проведения: ул. Ленина, д. 1, ауд. 101.
-		return fmt.Sprintf("Пара %d, %s, %s.\nВедёт %s.\nМесто проведения: %s, ауд. %s.", eventNumber+1, e.Format, e.Name, e.Teacher, e.Address, e.Room)
+
+		return fmt.Sprintf("Пара %d, %s, %s.\nВедёт %s.\n%s", eventNumber+1, e.Format, e.Name, e.Teacher, address)
 	} else {
 		// Событие с 8:30 до 10:00, лекция, программирование.\nВедёт Иванов Иван Иванович.\nМесто проведения: ул. Ленина, д. 1, ауд. 101.
-		return fmt.Sprintf("Событие с %s до %s, %s, %s.\nВедёт %s.\nМесто проведения: %s, ауд. %s.", e.Start.Format("15:04"), e.End.Format("15:04"), e.Format, e.Name, e.Teacher, e.Address, e.Room)
+		return fmt.Sprintf("Событие с %s до %s, %s, %s.\nВедёт %s.\n%s", e.Start.Format("15:04"), e.End.Format("15:04"), e.Format, e.Name, e.Teacher, address)
 	}
 }
 
