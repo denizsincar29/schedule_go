@@ -73,18 +73,18 @@ func (data *ScheduleResponse) GetAddress(e *Event) (string, string) {
 	for _, location := range locations {
 		if location.EventID == e.ID {
 			// here's where the fun begins
-			if location.CustomLocation != "" {
-				address := "online"
-				room, ok := location.CustomLocation.(string)
+			if location.CustomLocation != nil {
+				address, ok := location.CustomLocation.(string)
 				if !ok {
-					room = "неизвестно"
+					address = "неизвестно"
 				}
+				room := "" // no room in custom location
 				return address, room
 			}
 			if location.Links.EventRooms.Href == "" {
 				return "неизвестно", "неизвестно"
 			}
-			// event_room_id = event_location['_links']['event-rooms']['href'][1:]
+
 			event_room_id := location.Links.EventRooms.Href[1:]
 			// level 2: find the room_id
 			for _, event_room := range eventRooms {

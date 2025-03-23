@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"schedule/modeus"
+	"schedule/parsers"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -32,31 +32,26 @@ func main() {
 		panic(err)
 	}
 	defer m.Close()
-	start := time.Now().Truncate(24 * time.Hour)
-	end := start.Add(24 * time.Hour)
-	// get schedule for the day
-	// now modeus has function SearchPerson! Lets seach for Синджар Дениз
-	personList, err := m.SearchPerson("Синджар Дениз", false) // by id = false
+	response, err := m.SearchPerson("Синджар", false) // by id = false
 	if err != nil {
 		panic(err)
 	}
-
-	persid := personList.Embedded.Persons[0].ID // it will be some kinda better after we make a good parser
-	result, err := m.GetSchedule(persid, start, end)
+	personList := response.Embedded.Persons
+	if len(personList) == 0 {
+		println("No person found")
+		return
+	}
+	me := personList[0]
+	// tomorrow 00:00 - 23:59
+	tomorrow := time.Now().AddDate(0, 0, 1).Truncate(24 * time.Hour)
+	tomorrowEnd := time.Now().AddDate(0, 0, 1).Add(24 * time.Hour)
+	schedule, err := m.GetSchedule(me.ID, tomorrow, tomorrowEnd)
 	if err != nil {
 		panic(err)
 	}
-	for _, event := range result.Embedded.Events {
-		fmt.Printf("event name: %v\n", result.GetEventName(&event))
-		format, typ := event.GetFormatAndType()
-		fmt.Printf("Format: %s, Type: %s\n", format, typ)
-		// format hh:mm
-		fmt.Printf("Event starts at: %s\n", event.Start.Format("15:04"))
-		fmt.Printf("and ends at %s\n", event.End.Format("15:04"))
-		// print the teacher using GetTeacher, address and room
-		fmt.Printf("Teacher: %s\n", result.GetTeacherName(&event))
-		address, room := result.GetAddress(&event)
-		fmt.Printf("Address: %s %s\n", address, room)
+	events, err := parsers.ParseEvents(schedule)
+	if err != nil {
+		panic(err)
 	}
-
+	events.Print()
 }

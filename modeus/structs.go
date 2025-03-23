@@ -251,8 +251,9 @@ type PersonLinks struct {
 // SearchPersonResponse represents the response from a person search
 type SearchPersonResponse struct {
 	Embedded struct {
-		Persons  []Person  `json:"persons"`
-		Students []Student `json:"students"`
+		Persons   []Person   `json:"persons"`
+		Students  []Student  `json:"students"`
+		Employees []Employee `json:"employees"`
 	} `json:"_embedded"`
 	Page PageInfo `json:"page"`
 }
@@ -267,4 +268,13 @@ type Student struct {
 	SpecialtyProfile  string    `json:"specialtyProfile"`
 	LearningStartDate time.Time `json:"learningStartDate"`
 	LearningEndDate   time.Time `json:"learningEndDate"`
+}
+
+type Employee struct {
+	ID        string `json:"id"`
+	PersonID  string `json:"personId"`
+	GroupID   string `json:"groupId"`
+	GroupName string `json:"groupName"`
+	DateIn    string `json:"dateIn"`
+	DateOut   string `json:"dateOut"`
 }

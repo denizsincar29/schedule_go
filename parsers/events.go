@@ -1,5 +1,3 @@
-//go:build ignore
-
 package parsers
 
 import (
@@ -7,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"schedule/modeus"
 	"sort"
 	"time"
 )
@@ -147,20 +146,42 @@ func (e *Events) RemoveDuplicates() {
 }
 
 // parse the api response to events
-/*
-func ParseEvents(data modeus.ScheduleResponse) (*Events, error) {
-// copilot, don't suggest this whole function, because i know how to do it
-	embedded := data.Embedded
+func ParseEvents(data *modeus.ScheduleResponse) (*Events, error) {
 	// this thing has so many hrefs
-	// get the base event list
-	events := embedded.Events
+	events := data.Embedded.Events
 	parsedEvents := make(Events, 0, len(events))
 	for _, event := range events {
+		address, room := data.GetAddress(&event)
+		format, typ := event.GetFormatAndType()
+		formatTypeString := format + " " + typ
 		evt := Event{
 			EventID: event.ID,
-			// from python: event_name = mess.get_name(event['_links']['course-unit-realization']['href'][1:], data) if 'course-unit-realization' in event['_links'] else event["name"]+", "+event["nameShort"]
-
+			Name:    data.GetEventName(&event),
+			Start:   event.Start,
+			End:     event.End,
+			Teacher: data.GetTeacherName(&event),
+			Address: address,
+			Room:    room,
+			Format:  formatTypeString,
 		}
+		parsedEvents = append(parsedEvents, evt)
+	}
+	parsedEvents.Sort()
+	return &parsedEvents, nil
+}
+
+// human readable string representation of the events
+func (e *Events) HumanString() string {
+	var result string
+	for _, event := range *e {
+		result += event.HumanString() + "\n"
+	}
+	return result
+}
+
+// print the events
+func (e *Events) Print() {
+	for _, event := range *e {
+		fmt.Println(event.HumanString())
 	}
 }
-*/
