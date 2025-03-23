@@ -106,6 +106,65 @@ func (data *ScheduleResponse) GetAddress(e *Event) (string, string) {
 }
 
 // gets the info about a person
-func (data *SearchPersonResponse) GetPersonInfo(person *Person) (personType, name, specialty, profile string, start, end time.Time) {
-	panic("not implemented")
+
+type Role int
+
+const (
+	RoleStudent Role = iota
+	RoleTeacher
+	Undefined
+)
+
+// gets if a person is student or teacher
+func (data *SearchPersonResponse) GetPersonType(person *Person) Role {
+	// difficulty level 1
+	students := data.Embedded.Students
+	teachers := data.Embedded.Employees
+	for _, student := range students {
+		if student.ID == person.ID {
+			return RoleStudent
+		}
+	}
+	for _, teacher := range teachers {
+		if teacher.ID == person.ID {
+			return RoleTeacher
+		}
+	}
+	return Undefined // json is terribly wrong and it should never happen! Sorry, api is a mess
+}
+
+// gets the specialty and profile of a student or group + nil if it's a teacher
+func (data *SearchPersonResponse) GetPersonInfo(person *Person) (string, string) {
+	// difficulty level 1
+	students := data.Embedded.Students
+	teachers := data.Embedded.Employees
+	for _, student := range students {
+		if student.ID == person.ID {
+			return student.SpecialtyName, student.SpecialtyProfile
+		}
+	}
+	for _, teacher := range teachers {
+		if teacher.ID == person.ID {
+			return teacher.GroupName, ""
+		}
+	}
+	return "неизвестно", "неизвестно"
+}
+
+// gets the date in and date out of the person
+func (data *SearchPersonResponse) GetPersonDates(person *Person) (time.Time, time.Time) {
+	// difficulty level 1
+	students := data.Embedded.Students
+	teachers := data.Embedded.Employees
+	for _, student := range students {
+		if student.ID == person.ID {
+			return student.LearningStartDate, student.LearningEndDate
+		}
+	}
+	for _, teacher := range teachers {
+		if teacher.ID == person.ID {
+			return teacher.DateIn, teacher.DateOut
+		}
+	}
+	return time.Time{}, time.Time{}
 }

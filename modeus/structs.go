@@ -271,10 +271,10 @@ type Student struct {
 }
 
 type Employee struct {
-	ID        string `json:"id"`
-	PersonID  string `json:"personId"`
-	GroupID   string `json:"groupId"`
-	GroupName string `json:"groupName"`
-	DateIn    string `json:"dateIn"`
-	DateOut   string `json:"dateOut"`
+	ID        string    `json:"id"`
+	PersonID  string    `json:"personId"`
+	GroupID   string    `json:"groupId"`
+	GroupName string    `json:"groupName"`
+	DateIn    time.Time `json:"dateIn"`
+	DateOut   time.Time `json:"dateOut"`
 }
