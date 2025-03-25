@@ -39,7 +39,7 @@ type Person struct {
 type People []Person
 
 // parse people from api response
-func ParsePeople(data modeus.SearchPersonResponse) People {
+func ParsePeople(data *modeus.SearchPersonResponse) *People {
 	var people People = make([]Person, 0, len(data.Embedded.Persons))
 	for _, apiPerson := range data.Embedded.Persons {
 		startDate, endDate := data.GetPersonDates(&apiPerson)
@@ -66,7 +66,7 @@ func ParsePeople(data modeus.SearchPersonResponse) People {
 		}
 		people = append(people, person)
 	}
-	return people
+	return &people
 }
 
 // stringify person

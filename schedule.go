@@ -7,10 +7,10 @@ import (
 )
 
 type Schedule struct {
-	Modeus modeus.Modeus
+	Modeus *modeus.Modeus
 }
 
-func NewSchedule(email string, password string) (*Schedule, error) {
+func New(email string, password string) (*Schedule, error) {
 	m, err := modeus.New(email, password)
 	if err != nil {
 		return nil, err
@@ -33,3 +33,10 @@ func (s *Schedule) GetSchedule(personID string, startTime time.Time, endTime tim
 }
 
 // search for a person by name or id
+func (s *Schedule) SearchPerson(query string, byID bool) (*parsers.People, error) {
+	people, err := s.Modeus.SearchPerson(query, byID)
+	if err != nil {
+		return &parsers.People{}, err
+	}
+	return parsers.ParsePeople(people), nil
+}

@@ -7,10 +7,12 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
 	"regexp"
+	"runtime"
 	"sync"
 	"time"
 
@@ -22,6 +24,17 @@ const (
 	defaultAuthURL = "https://narfu-auth.modeus.org"
 	tokenLifetime  = 12 * time.Hour
 )
+
+// a helper function that takes ref to http request and if wasm is used, sets the header
+func setWasm(req *http.Request) {
+	// if wasm is used, set the header
+	if runtime.GOARCH == "wasm" {
+		log.Println("WASM detected, setting headers")
+		req.Header.Set("js.fetch:mode", "no-cors")
+		req.Header.Set("js.fetch:credentials", "include")
+
+	}
+}
 
 type Modeus struct {
 	httpClient *http.Client
@@ -39,6 +52,7 @@ func New(email, password string) (*Modeus, error) {
 }
 
 func NewWithConfig(baseURL, authURL string, email, password string) (*Modeus, error) {
+	log.Printf("Email: (%s), Password: (%s)\n", email, password)
 	jar, err := cookiejar.New(nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create cookie jar: %w", err)
@@ -68,7 +82,7 @@ func (m *Modeus) Close() {
 	m.httpClient.CloseIdleConnections()
 }
 
-// parseToken retrieves a new Modeus token. This is now private.
+// parses the api token from the login page
 func (m *Modeus) parseToken() (string, time.Time, error) {
 	email := correctEmail(m.email)
 
@@ -91,6 +105,7 @@ func (m *Modeus) parseToken() (string, time.Time, error) {
 	defer cancel()
 
 	req = req.WithContext(ctx)
+	setWasm(req) // WASM header
 
 	beforeForm1Response, err := m.httpClient.Do(req)
 	if err != nil {
@@ -103,7 +118,14 @@ func (m *Modeus) parseToken() (string, time.Time, error) {
 		return "", time.Time{}, fmt.Errorf("failed to parse form1 URL: %w", err)
 	}
 
-	form1Response, err := m.httpClient.Get(form1URL.String())
+	req, err = http.NewRequest("GET", form1URL.String(), nil) // Re-create request for wasm headers
+	if err != nil {
+		return "", time.Time{}, fmt.Errorf("failed to create request for form1: %w", err)
+	}
+	req = req.WithContext(ctx)
+	setWasm(req) // WASM header
+
+	form1Response, err := m.httpClient.Do(req) // Use the new request with headers.
 	if err != nil {
 		return "", time.Time{}, fmt.Errorf("failed to get form1: %w", err)
 	}
@@ -133,7 +155,20 @@ func (m *Modeus) parseToken() (string, time.Time, error) {
 		"AuthMethod": {"FormsAuthentication"},
 	}
 
-	form2Response, err := m.httpClient.PostForm(form1URLMatch, data)
+	form2URL, err := url.Parse(form1URLMatch)
+	if err != nil {
+		return "", time.Time{}, fmt.Errorf("failed to parse form2 URL: %w", err)
+	}
+	req, err = http.NewRequest("POST", form2URL.String(), nil)
+	if err != nil {
+		return "", time.Time{}, fmt.Errorf("failed to create request for form2: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Body = io.NopCloser(bytes.NewBufferString(data.Encode()))
+	req = req.WithContext(ctx)
+	setWasm(req)
+
+	form2Response, err := m.httpClient.Do(req) // Use the new request with WASM Headers
 	if err != nil {
 		return "", time.Time{}, fmt.Errorf("failed to post to form1: %w", err)
 	}
@@ -161,9 +196,20 @@ func (m *Modeus) parseToken() (string, time.Time, error) {
 	for k, v := range form2Matches {
 		form2Data.Set(k, v)
 	}
+	form2Data.Set("UserName", email) //need to resend, if not it returns user name error
+	form2Data.Set("Password", m.password)
 
 	url3 := m.authURL + "/commonauth"
-	lastResponse, err := m.httpClient.PostForm(url3, form2Data)
+	req, err = http.NewRequest("POST", url3, nil)
+	if err != nil {
+		return "", time.Time{}, fmt.Errorf("failed to create request for commonauth: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Body = io.NopCloser(bytes.NewBufferString(form2Data.Encode()))
+	req = req.WithContext(ctx)
+
+	setWasm(req)
+	lastResponse, err := m.httpClient.Do(req) // Use the new request with headers
 
 	if err != nil {
 		return "", time.Time{}, fmt.Errorf("failed to post to form2: %w", err)
@@ -172,7 +218,7 @@ func (m *Modeus) parseToken() (string, time.Time, error) {
 
 	lastURL := lastResponse.Request.URL.String()
 
-	idTokenRegex := regexp.MustCompile(`#id_token=(.+?)&`)
+	idTokenRegex := regexp.MustCompile(`id_token=(.+?)&`)
 	idTokenMatch := idTokenRegex.FindStringSubmatch(lastURL)
 
 	if len(idTokenMatch) < 2 {
