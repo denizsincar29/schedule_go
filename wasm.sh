@@ -13,7 +13,7 @@ mkdir -p "$OUTDIR"
 echo "Building go code"
 GOOS="js"
 GOARCH="wasm"
-go build -o "$OUTDIR/main.wasm" ./main
+go build -o "$OUTDIR/main.wasm" ./main_wasm
 unset GOOS
 unset GOARCH
 

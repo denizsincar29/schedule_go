@@ -8,7 +8,7 @@ mkdir %OUTDIR%
 echo building go code
 set GOOS=js
 set GOARCH=wasm
-go build -o %OUTDIR%/main.wasm ./main
+go build -o %OUTDIR%/main.wasm ./main_wasm
 set GOOS=
 set GOARCH=
 

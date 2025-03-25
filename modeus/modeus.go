@@ -52,7 +52,6 @@ func New(email, password string) (*Modeus, error) {
 }
 
 func NewWithConfig(baseURL, authURL string, email, password string) (*Modeus, error) {
-	log.Printf("Email: (%s), Password: (%s)\n", email, password)
 	jar, err := cookiejar.New(nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create cookie jar: %w", err)
@@ -85,7 +84,6 @@ func (m *Modeus) Close() {
 // parses the api token from the login page
 func (m *Modeus) parseToken() (string, time.Time, error) {
 	email := correctEmail(m.email)
-
 	params := url.Values{
 		"client_id":     {"YDNCeCPsf1zL2etGQflijyfzo88a"},
 		"redirect_uri":  {"https://narfu.modeus.org/"},
@@ -94,7 +92,6 @@ func (m *Modeus) parseToken() (string, time.Time, error) {
 		"state":         {"abab35fcb9164912aa46d287a594a338"},
 		"nonce":         {"08cd3a21e9724040acb48cf3a35b0c4b"},
 	}
-
 	baseURL := m.authURL + "/oauth2/authorize"
 	req, err := http.NewRequest("GET", baseURL+"?"+params.Encode(), nil)
 	if err != nil {
@@ -112,7 +109,7 @@ func (m *Modeus) parseToken() (string, time.Time, error) {
 		return "", time.Time{}, fmt.Errorf("failed to get before form1: %w", err)
 	}
 	defer beforeForm1Response.Body.Close()
-
+	log.Println("got beforeForm1Response", beforeForm1Response.Request.URL.String())
 	form1URL, err := url.Parse(beforeForm1Response.Request.URL.String())
 	if err != nil {
 		return "", time.Time{}, fmt.Errorf("failed to parse form1 URL: %w", err)
