@@ -12,6 +12,10 @@ func (dt *DateTime) MarshalJSON() ([]byte, error) {
 }
 
 func (dt *DateTime) UnmarshalJSON(data []byte) error {
+	// delete surrounding quotes if any
+	if len(data) > 2 && data[0] == '"' && data[len(data)-1] == '"' {
+		data = data[1 : len(data)-1]
+	}
 	// try to unmarshal as time.Time first
 	var t time.Time
 	err := t.UnmarshalJSON(data)
