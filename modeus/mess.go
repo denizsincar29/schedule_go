@@ -161,12 +161,12 @@ func (data *SearchPersonResponse) GetPersonDates(person *Person) (time.Time, tim
 	teachers := data.Embedded.Employees
 	for _, student := range students {
 		if student.PersonID == person.ID {
-			return student.LearningStartDate, student.LearningEndDate
+			return time.Time(student.LearningStartDate), time.Time(student.LearningEndDate)
 		}
 	}
 	for _, teacher := range teachers {
 		if teacher.PersonID == person.ID {
-			return teacher.DateIn, teacher.DateOut
+			return time.Time(teacher.DateIn), time.Time(teacher.DateOut)
 		}
 	}
 	return time.Time{}, time.Time{}

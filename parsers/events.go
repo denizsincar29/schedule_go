@@ -167,8 +167,8 @@ func ParseEvents(data *modeus.ScheduleResponse) (*Events, error) {
 		evt := Event{
 			EventID: event.ID,
 			Name:    data.GetEventName(&event),
-			Start:   event.Start,
-			End:     event.End,
+			Start:   time.Time(event.Start),
+			End:     time.Time(event.End),
 			Teacher: data.GetTeacherName(&event),
 			Address: address,
 			Room:    room,

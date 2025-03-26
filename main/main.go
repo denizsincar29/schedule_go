@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"log"
+	"os"
 	"time"
 
 	"github.com/denizsincar29/schedule_go"
@@ -9,7 +12,7 @@ import (
 
 func check(err error) {
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }
 
@@ -20,7 +23,17 @@ func main() {
 	check(err)
 	defer sched.Close()
 	// search for my name in the api and get my id
-	ppl, err := sched.SearchPerson("Синджар Дениз", false)
+
+	name := ""
+	fmt.Print("Enter your name: ")
+	scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
+	if scanner.Scan() {
+		name = scanner.Text()
+	} else {
+		fmt.Println("Error: ", scanner.Err())
+		return
+	}
+	ppl, err := sched.SearchPerson(name, false)
 	check(err)
 	me := (*ppl)[0]
 	fmt.Printf("me.HumanString(): %v\n", me.HumanString())

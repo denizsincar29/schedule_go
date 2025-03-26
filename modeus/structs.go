@@ -1,7 +1,5 @@
 package modeus
 
-import "time"
-
 type Link struct {
 	Href string `json:"href"`
 }
@@ -40,8 +38,8 @@ type Event struct {
 	Description               interface{}   `json:"description"`
 	TypeID                    string        `json:"typeId"`
 	FormatID                  interface{}   `json:"formatId"`
-	Start                     time.Time     `json:"start"`
-	End                       time.Time     `json:"end"`
+	Start                     DateTime      `json:"start"`
+	End                       DateTime      `json:"end"`
 	StartsAtLocal             string        `json:"startsAtLocal"`
 	EndsAtLocal               string        `json:"endsAtLocal"`
 	StartsAt                  string        `json:"startsAt"`
@@ -259,22 +257,22 @@ type SearchPersonResponse struct {
 }
 
 type Student struct {
-	ID                string    `json:"id"`
-	PersonID          string    `json:"personId"`
-	FlowID            string    `json:"flowId"`
-	FlowCode          string    `json:"flowCode"`
-	SpecialtyCode     string    `json:"specialtyCode"`
-	SpecialtyName     string    `json:"specialtyName"`
-	SpecialtyProfile  string    `json:"specialtyProfile"`
-	LearningStartDate time.Time `json:"learningStartDate"`
-	LearningEndDate   time.Time `json:"learningEndDate"`
+	ID                string   `json:"id"`
+	PersonID          string   `json:"personId"`
+	FlowID            string   `json:"flowId"`
+	FlowCode          string   `json:"flowCode"`
+	SpecialtyCode     string   `json:"specialtyCode"`
+	SpecialtyName     string   `json:"specialtyName"`
+	SpecialtyProfile  string   `json:"specialtyProfile"`
+	LearningStartDate DateTime `json:"learningStartDate"`
+	LearningEndDate   DateTime `json:"learningEndDate"`
 }
 
 type Employee struct {
-	ID        string    `json:"id"`
-	PersonID  string    `json:"personId"`
-	GroupID   string    `json:"groupId"`
-	GroupName string    `json:"groupName"`
-	DateIn    time.Time `json:"dateIn"`
-	DateOut   time.Time `json:"dateOut"`
+	ID        string   `json:"id"`
+	PersonID  string   `json:"personId"`
+	GroupID   string   `json:"groupId"`
+	GroupName string   `json:"groupName"`
+	DateIn    DateTime `json:"dateIn"`
+	DateOut   DateTime `json:"dateOut"`
 }
