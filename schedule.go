@@ -1,9 +1,10 @@
-package schedule
+package schedule_go
 
 import (
-	"schedule/modeus"
-	"schedule/parsers"
 	"time"
+
+	"github.com/denizsincar29/schedule_go/modeus"
+	"github.com/denizsincar29/schedule_go/parsers"
 )
 
 type Schedule struct {

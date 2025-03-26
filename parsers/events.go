@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"schedule/modeus"
+
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/denizsincar29/schedule_go/modeus"
 )
 
 // from python, STUDIES = [time(8, 20), time(10, 10), time(12, 0), time(14, 30), time(16, 15), time(18, 0), time(19, 40)]

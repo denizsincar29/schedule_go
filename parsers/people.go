@@ -2,8 +2,10 @@ package parsers
 
 import (
 	"fmt"
-	"schedule/modeus"
+
 	"time"
+
+	"github.com/denizsincar29/schedule_go/modeus"
 )
 
 // Constants for the type of person (student or teacher)
