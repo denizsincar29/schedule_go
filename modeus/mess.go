@@ -124,12 +124,12 @@ func (data *SearchPersonResponse) GetPersonType(person *Person) Role {
 	students := data.Embedded.Students
 	teachers := data.Embedded.Employees
 	for _, student := range students {
-		if student.ID == person.ID {
+		if student.PersonID == person.ID {
 			return RoleStudent
 		}
 	}
 	for _, teacher := range teachers {
-		if teacher.ID == person.ID {
+		if teacher.PersonID == person.ID {
 			return RoleTeacher
 		}
 	}
@@ -142,12 +142,12 @@ func (data *SearchPersonResponse) GetPersonInfo(person *Person) (string, string)
 	students := data.Embedded.Students
 	teachers := data.Embedded.Employees
 	for _, student := range students {
-		if student.ID == person.ID {
+		if student.PersonID == person.ID {
 			return student.SpecialtyName, student.SpecialtyProfile
 		}
 	}
 	for _, teacher := range teachers {
-		if teacher.ID == person.ID {
+		if teacher.PersonID == person.ID {
 			return teacher.GroupName, ""
 		}
 	}
@@ -160,12 +160,12 @@ func (data *SearchPersonResponse) GetPersonDates(person *Person) (time.Time, tim
 	students := data.Embedded.Students
 	teachers := data.Embedded.Employees
 	for _, student := range students {
-		if student.ID == person.ID {
+		if student.PersonID == person.ID {
 			return student.LearningStartDate, student.LearningEndDate
 		}
 	}
 	for _, teacher := range teachers {
-		if teacher.ID == person.ID {
+		if teacher.PersonID == person.ID {
 			return teacher.DateIn, teacher.DateOut
 		}
 	}

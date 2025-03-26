@@ -109,7 +109,6 @@ func (m *Modeus) parseToken() (string, time.Time, error) {
 		return "", time.Time{}, fmt.Errorf("failed to get before form1: %w", err)
 	}
 	defer beforeForm1Response.Body.Close()
-	log.Println("got beforeForm1Response", beforeForm1Response.Request.URL.String())
 	form1URL, err := url.Parse(beforeForm1Response.Request.URL.String())
 	if err != nil {
 		return "", time.Time{}, fmt.Errorf("failed to parse form1 URL: %w", err)
