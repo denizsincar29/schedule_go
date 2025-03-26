@@ -1,7 +1,6 @@
 package modeus
 
 import (
-	"log"
 	"time"
 )
 
@@ -33,7 +32,7 @@ func (dt *DateTime) UnmarshalJSON(data []byte) error {
 		return nil
 	}
 	// don't want any errors here, return zero time
-	log.Printf("DateTime.UnmarshalJSON: %v", err)
+	//log.Printf("DateTime.UnmarshalJSON: %v", err)
 	*dt = DateTime(time.Time{})
 	return nil
 }
