@@ -8,12 +8,15 @@ import (
 // mess is because the API response is a huge mess of nested structs
 
 // gets the format and type of an event
-func (data *Event) GetFormatAndType() (string, string) {
+func (data *ScheduleResponse) GetFormat(e *Event) string {
 	// difficulty level 0
-	format, _ := data.FormatID.(string)
-	typ := data.TypeID
-	// ignore, they are already empty
-	return format, typ
+	lessonRealizations := data.Embedded.LessonRealizations
+	for _, lr := range lessonRealizations {
+		if lr.ID == e.Links.LessonRealization.Href[1:] {
+			return strings.TrimSpace(lr.Name + " " + lr.NameShort)
+		}
+	}
+	return "" // can happen in extremely rare cases
 }
 
 // Gets the name of an event

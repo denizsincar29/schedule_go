@@ -163,8 +163,7 @@ func ParseEvents(data *modeus.ScheduleResponse) (*Events, error) {
 	parsedEvents := make(Events, 0, len(events))
 	for _, event := range events {
 		address, room := data.GetAddress(&event)
-		format, typ := event.GetFormatAndType()
-		formatTypeString := format + " " + typ
+		format := data.GetFormat(&event)
 		evt := Event{
 			EventID: event.ID,
 			Name:    data.GetEventName(&event),
@@ -173,7 +172,7 @@ func ParseEvents(data *modeus.ScheduleResponse) (*Events, error) {
 			Teacher: data.GetTeacherName(&event),
 			Address: address,
 			Room:    room,
-			Format:  formatTypeString,
+			Format:  format,
 		}
 		parsedEvents = append(parsedEvents, evt)
 	}
