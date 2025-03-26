@@ -1,4 +1,4 @@
-module schedule
+module github.com/denizsincar29/schedule_go
 
 go 1.24.1
 
